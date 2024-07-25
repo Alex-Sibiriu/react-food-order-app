@@ -4,6 +4,7 @@ export const CartContext = createContext({
 	meals: [],
 	addMealToCart: () => {},
 	updateMealQuantity: () => {},
+	clearCart: () => {},
 });
 
 function mealsCartReducer(state, action) {
@@ -11,7 +12,7 @@ function mealsCartReducer(state, action) {
 		const updatedMeals = [...state.meals];
 
 		const existingMealIndex = updatedMeals.findIndex(
-			(cartMeal) => cartMeal.id === action.payload
+			(cartMeal) => cartMeal.id === action.payload.id
 		);
 
 		const existingMeal = updatedMeals[existingMealIndex];
@@ -21,6 +22,8 @@ function mealsCartReducer(state, action) {
 				...existingMeal,
 				quantity: existingMeal.quantity + 1,
 			};
+
+			updatedMeals[existingMealIndex] = updatedMeal;
 		} else {
 			const meal = action.payload.array.find(
 				(meal) => meal.id === action.payload.id
@@ -58,6 +61,12 @@ function mealsCartReducer(state, action) {
 		};
 	}
 
+	if (action.type === "CLEAR_CART") {
+		return {
+			meals: [],
+		};
+	}
+
 	return state;
 }
 
@@ -86,10 +95,15 @@ export default function CartContexProvider({ children }) {
 		});
 	}
 
+	function handleClearCart() {
+		mealsCartDispatch({ type: "CLEAR_CART" });
+	}
+
 	const ctxValue = {
 		meals: mealsCartState.meals,
 		addMealToCart: handleAddMealToCart,
 		updateMealQuantity: handleUpdateCartMealQuantity,
+		clearCart: handleClearCart,
 	};
 
 	return (

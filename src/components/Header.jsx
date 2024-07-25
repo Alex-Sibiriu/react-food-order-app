@@ -20,7 +20,7 @@ export default function Header() {
 					<img src={imgLogo} alt="ReactFood Logo" />
 					<h1>REACTFOOD</h1>
 				</div>
-				<button onClick={handleOpenCart}>
+				<button className="meal-item-price" onClick={handleOpenCart}>
 					Cart &#10098;{meals.length}&#10099;
 				</button>
 			</header>
