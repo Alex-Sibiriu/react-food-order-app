@@ -29,9 +29,7 @@ function mealsCartReducer(state, action) {
 				(meal) => meal.id === action.payload.id
 			);
 			updatedMeals.push({
-				id: action.payload.id,
-				name: meal.name,
-				price: meal.price,
+				...meal,
 				quantity: 1,
 			});
 		}

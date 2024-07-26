@@ -6,8 +6,10 @@ import {
 	useState,
 } from "react";
 import { CartContext } from "../store/meals-cart-context";
+import { createPortal } from "react-dom";
 
 import Input from "./Input";
+import OrderOk from "./OrderOk";
 
 function isEmptyObject(obj) {
 	return obj && Object.keys(obj).length === 0 && obj.constructor === Object;
@@ -69,75 +71,51 @@ const OrderModal = forwardRef(function Modal({ totalPrice }, ref) {
 			clearCart();
 		} catch (error) {
 			console.error("There was a problem with the fetch operation:", error);
-			setOrderMessage(
-				"There was an error processing your order. Please try again."
-			);
+			setOrderMessage(error.message);
 		}
 		setIsFetching(false);
 	};
 
-	return (
+	return createPortal(
 		<dialog ref={dialog} className="modal">
 			{isEmptyObject(validOrder) && <h2>Checkout</h2>}
 			{isFetching && <p>Please wait...</p>}
 			{!isEmptyObject(validOrder) && (
-				<>
-					<h2>{orderMessage}</h2>
-					<ul>
-						{validOrder.items.map((meal) => (
-							<li key={`cart-${meal.id}`} className="cart-item">
-								<p>
-									{meal.name} - {meal.quantity} x ${meal.price}
-								</p>
-							</li>
-						))}
-					</ul>
-
-					<p className="cart-total">Total Price: ${validOrder.totalPrice}</p>
-
-					<div className="modal-actions">
-						<button
-							className="text-button"
-							onClick={handleClose}
-							disabled={isFetching}
-						>
-							Close
-						</button>
-					</div>
-				</>
+				<OrderOk
+					orderMessage={orderMessage}
+					validOrder={validOrder}
+					close={handleClose}
+				/>
 			)}
 
 			{isEmptyObject(validOrder) && !isFetching && (
 				<form onSubmit={handleSubmit}>
 					<p>{orderMessage}</p>
-					<Input label="name" type="text" name="name" required minLength="3" />
-					<Input label="E-Mail Address" type="email" name="email" required />
-					<Input label="Street" type="text" name="street" required />
+					<Input label="name" type="text" id="name" minLength="3" />
+					<Input label="E-Mail Address" type="email" id="email" />
+					<Input label="Street" type="text" id="street" />
 					<div className="control-row">
-						<Input
-							label="Postal Code"
-							type="text"
-							name="postal-code"
-							required
-						/>
-						<Input label="City" type="text" name="city" required />
+						<Input label="Postal Code" type="text" id="postal-code" />
+						<Input label="City" type="text" id="city" />
 					</div>
 
 					<div className="modal-actions">
 						<button
 							className="text-button"
+							type="button"
 							onClick={handleClose}
 							disabled={isFetching}
 						>
 							Close
 						</button>
 						<button className="button" disabled={isFetching}>
-							Checkout
+							Submit Order
 						</button>
 					</div>
 				</form>
 			)}
-		</dialog>
+		</dialog>,
+		document.getElementById("modal")
 	);
 });
 

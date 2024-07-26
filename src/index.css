@@ -50,6 +50,19 @@ h1 {
   text-transform: uppercase;
 }
 
+.center {
+  text-align: center;
+}
+
+.error {
+ width: fit-content;
+ margin: auto;
+ background-color: #F9ACAD;
+ color: #704f4f;
+ padding: 5px 30px;
+ border-radius: 10px;
+}
+
 #meals {
   width: 90%;
   max-width: 70rem;

@@ -12,6 +12,10 @@ export default function Header() {
 		modal.current.open();
 	}
 
+	const totalCartItems = meals.reduce((totalItems, item) => {
+		return totalItems + item.quantity;
+	}, 0);
+
 	return (
 		<>
 			<CartModal ref={modal} />
@@ -20,8 +24,8 @@ export default function Header() {
 					<img src={imgLogo} alt="ReactFood Logo" />
 					<h1>REACTFOOD</h1>
 				</div>
-				<button className="meal-item-price" onClick={handleOpenCart}>
-					Cart &#10098;{meals.length}&#10099;
+				<button className="text-button" onClick={handleOpenCart}>
+					Cart &#10098;{totalCartItems}&#10099;
 				</button>
 			</header>
 		</>

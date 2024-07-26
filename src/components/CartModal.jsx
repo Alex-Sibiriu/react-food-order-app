@@ -1,5 +1,6 @@
 import { useContext, forwardRef, useImperativeHandle, useRef } from "react";
 import { CartContext } from "../store/meals-cart-context";
+import { createPortal } from "react-dom";
 
 import OrderModal from "./OrderModal";
 
@@ -13,13 +14,11 @@ const CartModal = forwardRef(function Modal({}, ref) {
 		dialog.current.close();
 	}
 
-	const calculateTotalPrice = () => {
-		return meals.reduce((total, meal) => {
+	const totalPrice = meals
+		.reduce((total, meal) => {
 			return total + meal.quantity * meal.price;
-		}, 0);
-	};
-
-	const totalPrice = calculateTotalPrice().toFixed(2);
+		}, 0)
+		.toFixed(2);
 
 	useImperativeHandle(ref, () => {
 		return {
@@ -29,7 +28,7 @@ const CartModal = forwardRef(function Modal({}, ref) {
 		};
 	});
 
-	return (
+	return createPortal(
 		<>
 			<OrderModal ref={modal} totalPrice={totalPrice} />
 			<dialog className="cart modal" ref={dialog}>
@@ -45,7 +44,7 @@ const CartModal = forwardRef(function Modal({}, ref) {
 								<button onClick={() => updateMealQuantity(meal.id, -1)}>
 									-
 								</button>
-								{meal.quantity}
+								<span>{meal.quantity}</span>
 								<button onClick={() => updateMealQuantity(meal.id, +1)}>
 									+
 								</button>
@@ -61,16 +60,15 @@ const CartModal = forwardRef(function Modal({}, ref) {
 					>
 						Close
 					</button>
-					<button
-						className="button"
-						disabled={meals.length < 1}
-						onClick={handleCheckoutOpen}
-					>
-						Go to Checkout
-					</button>
+					{meals.length > 0 && (
+						<button className="button" onClick={handleCheckoutOpen}>
+							Go to Checkout
+						</button>
+					)}
 				</div>
 			</dialog>
-		</>
+		</>,
+		document.getElementById("modal")
 	);
 });
 
